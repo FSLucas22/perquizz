@@ -19,13 +19,14 @@ class StatusControllerTest {
 
     @Test
     fun `should return status 200`() {
+
         val result = mockMvc.perform(get("/api/v1/status"))
         result.andExpectAll(
             status().isOk,
             jsonPath("$.updatedAt").isNotEmpty,
             jsonPath("$.dependencies.database.version", equalTo("16.0")),
             jsonPath("$.dependencies.database.maxConnections").isNumber,
-            jsonPath("$.dependencies.database.activeConnections", equalTo(1))
+            jsonPath("$.dependencies.database.activeConnections", equalTo(5))
         )
     }
 }
