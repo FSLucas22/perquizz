@@ -8,17 +8,18 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-
 @RestController
 class StatusController(
     @Autowired val entityManager: EntityManager,
-    @Value("\${db.name}") private val databaseName: String
+    @Value("\${db.name}") private val databaseName: String,
 ) {
     @GetMapping("/api/v1/status")
     fun returnStatus(): ResponseEntity<StatusResponseDto> {
         val databaseDto = DatabaseEntity.fromEntityManager(entityManager, databaseName).toDto()
-        val response = StatusResponseDto(
-            DependenciesDto(databaseDto))
+        val response =
+            StatusResponseDto(
+                DependenciesDto(databaseDto),
+            )
         return ResponseEntity.status(HttpStatus.OK).body(response)
     }
 }

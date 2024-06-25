@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class PerquizzApplication
 
 fun main(args: Array<String>) {
-	runApplication<PerquizzApplication>(*args)
+    runApplication<PerquizzApplication>(*args)
 }

@@ -10,13 +10,13 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration {
-
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http
-        .csrf { it.disable() }
-        .authorizeHttpRequests {
-            it
-                .requestMatchers(HttpMethod.GET, "/api/v1/status").permitAll()
-                .anyRequest().authenticated()
-        }.build()
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
+        http
+            .csrf { it.disable() }
+            .authorizeHttpRequests {
+                it
+                    .requestMatchers(HttpMethod.GET, "/api/v1/status").permitAll()
+                    .anyRequest().authenticated()
+            }.build()
 }

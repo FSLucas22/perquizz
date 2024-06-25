@@ -6,5 +6,7 @@ data class DatabaseDto(val version: String, val maxConnections: Int, val activeC
 
 data class DependenciesDto(val database: DatabaseDto)
 
-data class StatusResponseDto(val dependencies: DependenciesDto,
-                             val updatedAt: LocalDateTime = LocalDateTime.now())
+data class StatusResponseDto(
+    val dependencies: DependenciesDto,
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+)
