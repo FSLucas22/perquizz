@@ -42,4 +42,7 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	if (project.hasProperty("ignore")) {
+		exclude("**/integration/StatusControllerTest.class")
+	}
 }

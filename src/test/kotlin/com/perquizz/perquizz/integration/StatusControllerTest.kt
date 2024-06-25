@@ -25,8 +25,8 @@ class StatusControllerTest {
             status().isOk,
             jsonPath("$.updatedAt").isNotEmpty,
             jsonPath("$.dependencies.database.version", equalTo("16.0")),
-            jsonPath("$.dependencies.database.maxConnections").isNumber,
-            jsonPath("$.dependencies.database.activeConnections", equalTo(5))
+            jsonPath("$.dependencies.database.maxConnections", equalTo(100)),
+            jsonPath("$.dependencies.database.activeConnections", equalTo(5)),
         )
     }
 }
