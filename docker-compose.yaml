@@ -1,0 +1,10 @@
+services:
+  database:
+    container_name: "perquizz-db-dev"
+    image: "postgres:16.0-alpine3.18"
+    environment:
+      - POSTGRES_DB=local_db
+      - POSTGRES_USER=local_userg
+      - POSTGRES_PASSWORD=local_password
+    ports:
+      - "5432:5432"
