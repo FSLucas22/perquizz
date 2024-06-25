@@ -12,10 +12,10 @@ data class DatabaseEntity(
         return DatabaseDto(version, maxConnections, activeConnections,)
     }
     companion object {
-        fun fromEntityManager(entityManager: EntityManager): DatabaseEntity {
+        fun fromEntityManager(entityManager: EntityManager, databaseName: String): DatabaseEntity {
             val version = getVersion(entityManager)
             val maxConnections = getMaxConnections(entityManager)
-            val activeConnections = getActiveConnections(entityManager)
+            val activeConnections = getActiveConnections(entityManager, databaseName)
             return DatabaseEntity(version, maxConnections, activeConnections,)
         }
 
@@ -35,12 +35,12 @@ data class DatabaseEntity(
             return query.singleResult as Int
         }
 
-        fun getActiveConnections(entityManager: EntityManager): Int {
+        fun getActiveConnections(entityManager: EntityManager, databaseName: String): Int {
             val query: Query = entityManager.createNativeQuery(
                 "select count(1)::int as used_connections from pg_stat_activity where datname = ?1;",
                 Int::class.java
             )
-            query.setParameter(1, "local_db")
+            query.setParameter(1, databaseName)
             return query.singleResult as Int
         }
     }
