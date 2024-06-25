@@ -1,9 +1,9 @@
 db:
-  host: localhost
-  port: 5432
-  name: local_db
-  user: local_user
-  password: local_password
+  host: ${POSTGRES_HOST:localhost}
+  port: ${POSTGRES_PORT:5432}
+  name: ${POSTGRES_DB:local_db}
+  user: ${POSTGRES_USER:local_user}
+  password: ${POSTGRES_PASSWORD:local_password}
 
 spring:
   application:
