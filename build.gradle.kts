@@ -25,10 +25,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     runtimeOnly("org.postgresql:postgresql")
-    runtimeOnly("org.flywaydb:flyway-database-postgresql:10.15.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.security:spring-security-test")
@@ -46,14 +44,23 @@ tasks.withType<Test> {
     dependsOn("serviceUp")
 }
 
-tasks.register("serviceUp") {
-    exec {
-        commandLine("docker", "compose", "up", "-d")
+val serviceUp =
+    tasks.register("serviceUp") {
+        doLast {
+            tasks.create<JavaExec>("serviceUpExec") {
+                exec {
+                    commandLine("docker", "compose", "up", "-d")
+                }
+            }
+        }
     }
-}
 
 tasks.register("serviceDown") {
-    exec {
-        commandLine("docker", "compose", "down")
+    doLast {
+        tasks.create<JavaExec>("serviceUpExec") {
+            exec {
+                commandLine("docker", "compose", "up", "-d")
+            }
+        }
     }
 }
