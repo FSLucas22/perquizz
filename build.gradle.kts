@@ -43,7 +43,17 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    if (project.hasProperty("ignore")) {
-        exclude("**/integration/StatusControllerTest.class")
+    dependsOn("serviceUp")
+}
+
+tasks.register("serviceUp") {
+    exec {
+        commandLine("docker", "compose", "up", "-d")
+    }
+}
+
+tasks.register("serviceDown") {
+    exec {
+        commandLine("docker", "compose", "down")
     }
 }
