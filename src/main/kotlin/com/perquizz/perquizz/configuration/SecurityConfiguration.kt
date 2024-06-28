@@ -17,6 +17,8 @@ class SecurityConfiguration {
             .authorizeHttpRequests {
                 it
                     .requestMatchers(HttpMethod.GET, "/api/v1/status").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/migrations").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/migrations/delete").permitAll()
                     .anyRequest().authenticated()
             }.build()
 }
