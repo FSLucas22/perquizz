@@ -5,14 +5,16 @@ import com.perquizz.perquizz.migrations.services.MigrationService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@RequestMapping("/api/v1")
 class MigrationController(val service: MigrationService) {
-    @GetMapping("/api/v1/migrations")
+    @GetMapping("/migrations")
     fun getMigrations(): ResponseEntity<MigrationsResponseDto> =
         ResponseEntity.ok(service.getPendingMigrations())
 
-    @PostMapping("/api/v1/migrations")
+    @PostMapping("/migrations")
     fun doMigrations(): ResponseEntity<MigrationsResponseDto> = ResponseEntity.ok(service.migrate())
 }

@@ -33,9 +33,11 @@ class MigrationControllerTest {
         flyway.clean()
     }
 
+    private val api = "/api/v1"
+
     @Test
     fun `should return status 200 and migrations list`() {
-        val result = mockMvc.perform(get("/api/v1/migrations"))
+        val result = mockMvc.perform(get("$api/migrations"))
         result.andExpectAll(
             status().isOk,
             jsonPath("$.migrations").isArray,
@@ -55,7 +57,7 @@ class MigrationControllerTest {
 
     @Test
     fun `should return status 200 and execute migrations`() {
-        val result = mockMvc.perform(post("/api/v1/migrations"))
+        val result = mockMvc.perform(post("$api/migrations"))
         result.andExpectAll(
             status().isOk,
             jsonPath("$.migrations").isArray,
