@@ -1,0 +1,4 @@
+spring:
+    flyway:
+        clean-disabled: false
+        locations: classpath:/db-test/migration
