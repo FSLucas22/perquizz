@@ -9,4 +9,13 @@ class MigrationServiceImpl(val repository: MigrationRepository) : MigrationServi
     override fun getPendingMigrations(): MigrationsResponseDto {
         return MigrationsResponseDto(repository.findPendingMigrations())
     }
+
+    override fun migrate(): MigrationsResponseDto {
+        val pendingMigrations =
+            MigrationsResponseDto(
+                repository.findPendingMigrations(),
+            )
+        repository.migrate()
+        return pendingMigrations
+    }
 }
