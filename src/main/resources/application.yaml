@@ -8,9 +8,6 @@ db:
 spring:
   application:
     name: perquizz
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
   datasource:
     url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
     username: ${db.user}
