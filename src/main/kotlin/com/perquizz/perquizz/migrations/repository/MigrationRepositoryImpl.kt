@@ -18,6 +18,6 @@ class MigrationRepositoryImpl(val flyway: Flyway) : MigrationRepository {
     }
 
     override fun migrate() {
-        TODO("Not yet implemented")
+        flyway.migrate()
     }
 }

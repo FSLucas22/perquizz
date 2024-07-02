@@ -18,6 +18,7 @@ class SecurityConfiguration {
                 it
                     .requestMatchers(HttpMethod.GET, "/api/v1/status").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/migrations").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/migrations").permitAll()
                     .anyRequest().authenticated()
             }.build()
 }
