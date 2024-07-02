@@ -21,12 +21,13 @@ class MigrationServiceTest {
         val pendingMigrations =
             listOf(
                 MigrationDto(
-                    "xyz",
-                    "Lucas F.S",
-                    "test migration",
-                    listOf(),
+                    "test",
+                    "test",
+                    "test",
+                    "0.0.0",
                 ),
             )
+
         every { repository.findPendingMigrations() } returns pendingMigrations
 
         val response = service.getPendingMigrations()
