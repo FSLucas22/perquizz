@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1")
-class MigrationController(val service: MigrationService) {
+class MigrationController(private val service: MigrationService) {
     @GetMapping("/migrations")
     fun getMigrations(): ResponseEntity<MigrationsResponseDto> =
         ResponseEntity.ok(service.getPendingMigrations())
