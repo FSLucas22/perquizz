@@ -5,9 +5,9 @@ import org.flywaydb.core.Flyway
 import org.springframework.stereotype.Repository
 
 @Repository
-class MigrationRepositoryImpl(val flyway: Flyway) : MigrationRepository {
-    override fun findPendingMigrations(): List<MigrationDto> {
-        return flyway.info().pending().map {
+class MigrationRepositoryImpl(private val flyway: Flyway) : MigrationRepository {
+    override fun findPendingMigrations() =
+        flyway.info().pending().map {
             MigrationDto(
                 it.description,
                 it.script,
@@ -15,7 +15,6 @@ class MigrationRepositoryImpl(val flyway: Flyway) : MigrationRepository {
                 it.version.name,
             )
         }
-    }
 
     override fun migrate() {
         flyway.migrate()
