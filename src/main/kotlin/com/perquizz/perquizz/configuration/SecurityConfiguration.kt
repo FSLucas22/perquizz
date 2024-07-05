@@ -16,7 +16,11 @@ class SecurityConfiguration {
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers(HttpMethod.GET, "/api/v1/status").permitAll()
+                    .requestMatchers(HttpMethod.GET, *publicGetEndpoints).permitAll()
+                    .requestMatchers(HttpMethod.POST, *publicPostEndpoints).permitAll()
                     .anyRequest().authenticated()
             }.build()
+
+    private val publicGetEndpoints = arrayOf("/api/v1/status", "/api/v1/migrations")
+    private val publicPostEndpoints = arrayOf("/api/v1/migrations")
 }
