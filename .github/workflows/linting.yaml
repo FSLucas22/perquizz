@@ -31,4 +31,4 @@ jobs:
           distribution: 'temurin'
 
       - name: Execute quality checks
-        run: ./gradlew detekt
+        run: ./gradlew detektMain detektTest
