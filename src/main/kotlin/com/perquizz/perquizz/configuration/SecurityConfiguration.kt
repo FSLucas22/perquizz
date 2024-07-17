@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration {
+    @Suppress("SpreadOperator")
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
         http
