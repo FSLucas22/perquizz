@@ -47,23 +47,18 @@ tasks.withType<Test> {
     dependsOn("serviceUp")
 }
 
-val serviceUp =
-    tasks.register("serviceUp") {
-        doLast {
-            tasks.create<JavaExec>("serviceUpExec") {
-                exec {
-                    commandLine("docker", "compose", "up", "-d")
-                }
-            }
+tasks.register("serviceUp") {
+    doLast {
+        exec {
+            commandLine("docker", "compose", "up", "-d")
         }
     }
+}
 
 tasks.register("serviceDown") {
     doLast {
-        tasks.create<JavaExec>("serviceUpExec") {
-            exec {
-                commandLine("docker", "compose", "down")
-            }
+        exec {
+            commandLine("docker", "compose", "down")
         }
     }
 }
