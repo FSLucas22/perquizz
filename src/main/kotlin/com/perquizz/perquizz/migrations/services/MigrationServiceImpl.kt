@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 @Service
 class MigrationServiceImpl(private val repository: MigrationRepository) : MigrationService {
     override fun getPendingMigrations(): MigrationsResponseDto {
+        return MigrationsResponseDto(listOf())
         return MigrationsResponseDto(repository.findPendingMigrations())
     }
 
