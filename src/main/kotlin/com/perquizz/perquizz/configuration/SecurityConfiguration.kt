@@ -23,5 +23,5 @@ class SecurityConfiguration {
             }.build()
 
     private val publicGetEndpoints = arrayOf("/api/v1/status", "/api/v1/migrations")
-    private val publicPostEndpoints = arrayOf("/api/v1/migrations")
+    private val publicPostEndpoints = arrayOf("/api/v1/migrations", "/api/v1/user")
 }
