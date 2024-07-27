@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.Duration
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -24,6 +25,8 @@ class IntegrationTestSummary {
         @Container
         @ServiceConnection
         @JvmStatic
-        val container = PostgreSQLContainer("postgres:16.0-alpine3.18")
+        val container =
+            PostgreSQLContainer("postgres:16.0-alpine3.18")
+                .withStartupTimeout(Duration.ofSeconds(180))
     }
 }
