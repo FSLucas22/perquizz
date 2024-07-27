@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 class UserEntity(
     @Column(nullable = false)
     var username: String,
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     var email: String,
     @Column(nullable = false)
     var password: String,

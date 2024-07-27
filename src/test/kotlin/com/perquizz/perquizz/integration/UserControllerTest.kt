@@ -1,9 +1,12 @@
 package com.perquizz.perquizz.integration
 
 import com.perquizz.perquizz.users.dtos.CreateUserRequestDto
+import com.perquizz.perquizz.users.entities.UserEntity
+import com.perquizz.perquizz.users.repositories.UserRepository
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
@@ -15,9 +18,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserControllerTest : IntegrationTestSummary() {
+    @Autowired
+    private lateinit var repository: UserRepository
+
     @Test
     fun `should create new user`() {
-        val newUser = CreateUserRequestDto("testuser", "testpassword", "test@email.com")
+        val newUser =
+            CreateUserRequestDto(
+                "testuser",
+                "testpassword",
+                "test@email.com",
+            )
+
         val performResult =
             mockMvc.perform(
                 post("/api/v1/user")
@@ -33,6 +45,36 @@ class UserControllerTest : IntegrationTestSummary() {
             jsonPath("$.createdAt", notNullValue()),
             jsonPath("$.updatedAt", notNullValue()),
             jsonPath("$.id", equalTo(1)),
+        )
+    }
+
+    @Test
+    fun `should not create user with repeated email`() {
+        val existingUser =
+            UserEntity(
+                "testuser",
+                "test@email.com",
+                "asdlkafaj",
+            )
+
+        repository.save(existingUser)
+
+        val request =
+            CreateUserRequestDto(
+                "newuser",
+                "newpassword",
+                "test@email.com",
+            )
+
+        mockMvc.perform(
+            post("/api/v1/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)),
+        ).andExpectAll(
+            status().isBadRequest,
+            jsonPath("$.type", equalTo("Invalid Email")),
+            jsonPath("$.message", equalTo("Email already exists")),
+            jsonPath("$.status", equalTo(400)),
         )
     }
 }
