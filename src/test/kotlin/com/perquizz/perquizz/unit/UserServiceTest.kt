@@ -9,16 +9,19 @@ import com.perquizz.perquizz.users.services.UserService
 import com.perquizz.perquizz.users.services.UserServiceImpl
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import org.springframework.security.crypto.password.PasswordEncoder
 import java.time.LocalDateTime
 
 class UserServiceTest {
     private val repository: UserRepository = mockk()
-    private val service: UserService = UserServiceImpl(repository)
+    private val passwordEncoder: PasswordEncoder = mockk()
+    private val service: UserService = UserServiceImpl(repository, passwordEncoder)
 
     @Test
     fun `should create a new user`() {
@@ -41,15 +44,20 @@ class UserServiceTest {
                 1L,
             )
 
+        every { passwordEncoder.encode("testpass") }.returns(encryptedPassword)
         every { repository.findByEmail("test@email.com") }.returns(null)
         every { repository.save(any()) }.returns(entity)
 
         val response: CreateUserResponseDto = service.createUser(request)
 
+        val entitySlot = slot<UserEntity>()
+
         verify {
-            repository.save(any())
+            passwordEncoder.encode("testpass")
+            repository.save(capture(entitySlot))
         }
 
+        assertThat(entitySlot.captured.password).isEqualTo(encryptedPassword)
         assertThat(response.id).isEqualTo(1L)
         assertThat(response.username).isEqualTo("testuser")
         assertThat(response.email).isEqualTo("test@email.com")

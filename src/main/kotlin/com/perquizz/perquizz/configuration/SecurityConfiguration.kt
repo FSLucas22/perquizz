@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
@@ -21,6 +23,9 @@ class SecurityConfiguration {
                     .requestMatchers(HttpMethod.POST, *publicPostEndpoints).permitAll()
                     .anyRequest().authenticated()
             }.build()
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     private val publicGetEndpoints = arrayOf("/api/v1/status", "/api/v1/migrations")
     private val publicPostEndpoints = arrayOf("/api/v1/migrations", "/api/v1/user")
