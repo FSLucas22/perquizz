@@ -119,7 +119,7 @@ class UserServiceTest {
         assertThat(response.id).isEqualTo(1L)
         assertThat(response.username).isEqualTo("testuser")
         assertThat(response.email).isEqualTo("test@email.com")
-        assertThat(response.createdAt).isEqualTo(entity.updatedAt)
+        assertThat(response.createdAt).isEqualTo(entity.createdAt)
         assertThat(response.updatedAt).isEqualTo(entity.updatedAt)
     }
 

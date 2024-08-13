@@ -51,6 +51,10 @@ tasks.withType<Test> {
     dependsOn("serviceUp")
 }
 
+tasks.check {
+    dependsOn("detektMain", "detektTest")
+}
+
 tasks.register("serviceUp") {
     doLast {
         exec {
