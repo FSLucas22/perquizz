@@ -25,7 +25,7 @@ class IntegrationTestSummary {
         @Container
         @ServiceConnection
         @JvmStatic
-        val container =
+        val container: PostgreSQLContainer<*> =
             PostgreSQLContainer("postgres:16.0-alpine3.18")
                 .withStartupTimeout(Duration.ofSeconds(180))
     }

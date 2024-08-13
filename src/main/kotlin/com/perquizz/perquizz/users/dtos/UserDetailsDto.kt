@@ -4,7 +4,7 @@ import com.perquizz.perquizz.users.entities.UserEntity
 import java.time.LocalDateTime
 
 data class UserDetailsDto(
-    val id: Long,
+    val id: Long?,
     val username: String,
     val email: String,
     val createdAt: LocalDateTime,
@@ -13,7 +13,7 @@ data class UserDetailsDto(
     companion object {
         fun from(entity: UserEntity): UserDetailsDto =
             UserDetailsDto(
-                entity.id!!,
+                entity.id,
                 entity.username,
                 entity.email,
                 entity.createdAt,
