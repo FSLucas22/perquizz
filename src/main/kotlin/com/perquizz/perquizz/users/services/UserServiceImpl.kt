@@ -2,7 +2,7 @@ package com.perquizz.perquizz.users.services
 
 import com.perquizz.perquizz.exceptions.BusinessException
 import com.perquizz.perquizz.users.dtos.CreateUserRequestDto
-import com.perquizz.perquizz.users.dtos.CreateUserResponseDto
+import com.perquizz.perquizz.users.dtos.UserDetailsDto
 import com.perquizz.perquizz.users.entities.UserEntity
 import com.perquizz.perquizz.users.repositories.UserRepository
 import org.springframework.http.HttpStatus
@@ -14,7 +14,7 @@ class UserServiceImpl(
     private val repository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
 ) : UserService {
-    override fun createUser(request: CreateUserRequestDto): CreateUserResponseDto {
+    override fun createUser(request: CreateUserRequestDto): UserDetailsDto {
         validateUserEmail(request.email)
 
         val encodedPassword = passwordEncoder.encode(request.password)
@@ -28,26 +28,14 @@ class UserServiceImpl(
                 ),
             )
 
-        return CreateUserResponseDto(
-            user.id!!,
-            user.username,
-            user.email,
-            user.createdAt,
-            user.updatedAt,
-        )
+        return UserDetailsDto.from(user)
     }
 
-    override fun findUserById(id: Long): CreateUserResponseDto =
+    override fun findUserById(id: Long): UserDetailsDto =
         repository.findById(id).orElseThrow {
             BusinessException("Invalid ID", "ID does not belong to any user", HttpStatus.NOT_FOUND)
         }.let {
-            CreateUserResponseDto(
-                it.id!!,
-                it.username,
-                it.email,
-                it.createdAt,
-                it.updatedAt,
-            )
+            UserDetailsDto.from(it)
         }
 
     private fun validateUserEmail(userEmail: String) =

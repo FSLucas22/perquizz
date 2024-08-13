@@ -2,7 +2,7 @@ package com.perquizz.perquizz.unit
 
 import com.perquizz.perquizz.exceptions.BusinessException
 import com.perquizz.perquizz.users.dtos.CreateUserRequestDto
-import com.perquizz.perquizz.users.dtos.CreateUserResponseDto
+import com.perquizz.perquizz.users.dtos.UserDetailsDto
 import com.perquizz.perquizz.users.entities.UserEntity
 import com.perquizz.perquizz.users.repositories.UserRepository
 import com.perquizz.perquizz.users.services.UserService
@@ -49,7 +49,7 @@ class UserServiceTest {
         every { repository.findByEmail("test@email.com") }.returns(null)
         every { repository.save(any()) }.returns(entity)
 
-        val response: CreateUserResponseDto = service.createUser(request)
+        val response: UserDetailsDto = service.createUser(request)
 
         val entitySlot = slot<UserEntity>()
 
@@ -114,7 +114,7 @@ class UserServiceTest {
 
         every { repository.findById(1L) }.returns(Optional.of(entity))
 
-        val response: CreateUserResponseDto = service.findUserById(1L)
+        val response: UserDetailsDto = service.findUserById(1L)
 
         assertThat(response.id).isEqualTo(1L)
         assertThat(response.username).isEqualTo("testuser")

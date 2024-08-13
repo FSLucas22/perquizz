@@ -1,7 +1,7 @@
 package com.perquizz.perquizz.users.controllers
 
 import com.perquizz.perquizz.users.dtos.CreateUserRequestDto
-import com.perquizz.perquizz.users.dtos.CreateUserResponseDto
+import com.perquizz.perquizz.users.dtos.UserDetailsDto
 import com.perquizz.perquizz.users.services.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,7 +18,7 @@ class UserController(
     @PostMapping("/api/v1/user")
     fun createUser(
         @RequestBody request: CreateUserRequestDto,
-    ): ResponseEntity<CreateUserResponseDto> =
+    ): ResponseEntity<UserDetailsDto> =
         service.createUser(request).let {
             ResponseEntity.created(URI.create("/api/v1/user/" + it.id))
                 .body(it)
@@ -27,7 +27,7 @@ class UserController(
     @GetMapping("/api/v1/user/{userId}")
     fun findUserById(
         @PathVariable userId: Long,
-    ): ResponseEntity<CreateUserResponseDto> =
+    ): ResponseEntity<UserDetailsDto> =
         service.findUserById(userId).let {
             ResponseEntity.ok().body(it)
         }
