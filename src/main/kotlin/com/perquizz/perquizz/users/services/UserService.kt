@@ -5,4 +5,6 @@ import com.perquizz.perquizz.users.dtos.CreateUserResponseDto
 
 interface UserService {
     fun createUser(request: CreateUserRequestDto): CreateUserResponseDto
+
+    fun findUserById(id: Long): CreateUserResponseDto
 }

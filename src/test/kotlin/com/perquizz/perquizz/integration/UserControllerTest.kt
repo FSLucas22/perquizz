@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -105,5 +106,38 @@ class UserControllerTest : IntegrationTestSummary() {
             jsonPath("$.id", equalTo(2)),
             header().string("location", "/api/v1/user/2"),
         )
+    }
+
+    @Test
+    fun `should find user by id`() {
+        val existingUser =
+            UserEntity(
+                "testuser",
+                "test@email.com",
+                "asdlkafaj",
+            )
+
+        repository.save(existingUser)
+
+        mockMvc.perform(get("/api/v1/user/1"))
+            .andExpectAll(
+                status().isOk,
+                jsonPath("$.username", equalTo("testuser")),
+                jsonPath("$.email", equalTo("test@email.com")),
+                jsonPath("$.createdAt", notNullValue()),
+                jsonPath("$.updatedAt", notNullValue()),
+                jsonPath("$.id", equalTo(1)),
+            )
+    }
+
+    @Test
+    fun `should return NOT FOUND when id does not belong to an user in database`() {
+        mockMvc.perform(get("/api/v1/user/1"))
+            .andExpectAll(
+                status().isNotFound,
+                jsonPath("$.type", equalTo("Invalid ID")),
+                jsonPath("$.message", equalTo("ID does not belong to any user")),
+                jsonPath("$.status", equalTo(404)),
+            )
     }
 }

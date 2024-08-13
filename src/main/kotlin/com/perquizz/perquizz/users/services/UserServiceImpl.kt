@@ -37,6 +37,19 @@ class UserServiceImpl(
         )
     }
 
+    override fun findUserById(id: Long): CreateUserResponseDto =
+        repository.findById(id).orElseThrow {
+            BusinessException("Invalid ID", "ID does not belong to any user", HttpStatus.NOT_FOUND)
+        }.let {
+            CreateUserResponseDto(
+                it.id!!,
+                it.username,
+                it.email,
+                it.createdAt,
+                it.updatedAt,
+            )
+        }
+
     private fun validateUserEmail(userEmail: String) =
         repository.findByEmail(userEmail)?.let {
             throw BusinessException(
