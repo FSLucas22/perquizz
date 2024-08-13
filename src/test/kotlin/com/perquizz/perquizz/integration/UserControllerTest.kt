@@ -77,4 +77,33 @@ class UserControllerTest : IntegrationTestSummary() {
             jsonPath("$.status", equalTo(400)),
         )
     }
+
+    @Test
+    fun `should return correct resource url`() {
+        val existingUser =
+            UserEntity(
+                "testuser",
+                "test@email.com",
+                "asdlkafaj",
+            )
+
+        repository.save(existingUser)
+
+        val request =
+            CreateUserRequestDto(
+                "newuser",
+                "newpassword",
+                "newtest@email.com",
+            )
+
+        mockMvc.perform(
+            post("/api/v1/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)),
+        ).andExpectAll(
+            status().isCreated(),
+            jsonPath("$.id", equalTo(2)),
+            header().string("location", "/api/v1/user/2"),
+        )
+    }
 }

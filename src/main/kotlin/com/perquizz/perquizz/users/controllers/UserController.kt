@@ -17,6 +17,8 @@ class UserController(
     fun createUser(
         @RequestBody request: CreateUserRequestDto,
     ): ResponseEntity<CreateUserResponseDto> =
-        ResponseEntity.created(URI.create("/api/v1/user/" + 1))
-            .body(service.createUser(request))
+        service.createUser(request).let {
+            ResponseEntity.created(URI.create("/api/v1/user/" + it.id))
+                .body(it)
+        }
 }
