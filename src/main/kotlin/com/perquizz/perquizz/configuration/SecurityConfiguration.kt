@@ -28,5 +28,5 @@ class SecurityConfiguration {
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     private val publicGetEndpoints = arrayOf("/api/v1/status", "/api/v1/migrations", "/api/v1/user/*")
-    private val publicPostEndpoints = arrayOf("/api/v1/migrations", "/api/v1/user")
+    private val publicPostEndpoints = arrayOf("/api/v1/migrations", "/api/v1/user", "api/v1/auth")
 }

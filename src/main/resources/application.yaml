@@ -15,3 +15,8 @@ spring:
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
+
+jwt:
+  config:
+    seconds-to-expire: 3600
+    password-key: ${JWT_PASSWORD:testkey}
