@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.Assertions.catchThrowable
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.context.SecurityContextHolder
 import java.time.Instant
@@ -39,6 +40,13 @@ class TokenFilterTest {
     private val filterChain: FilterChain = mockk()
     private val userRepository: UserRepository = mockk()
     private val tokenFilter = TokenFilterImpl(userRepository, tokenReaderService)
+
+    @BeforeEach
+    fun setUp() {
+        SecurityContextHolder
+            .getContext()
+            .authentication = null
+    }
 
     @Test
     fun `should set user authentication when token is valid`() {

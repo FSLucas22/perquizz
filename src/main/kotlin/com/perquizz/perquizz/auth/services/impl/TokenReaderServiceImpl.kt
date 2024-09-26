@@ -7,7 +7,9 @@ import com.perquizz.perquizz.configuration.JwtConfiguration
 import com.perquizz.perquizz.exceptions.InvalidTokenException
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import org.springframework.stereotype.Service
 
+@Service
 class TokenReaderServiceImpl(
     private val jwtConfiguration: JwtConfiguration,
 ) : TokenReaderService {

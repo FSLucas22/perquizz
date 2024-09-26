@@ -1,8 +1,10 @@
 package com.perquizz.perquizz.integration
 
+import com.perquizz.perquizz.auth.dtos.TokenRequestDto
 import com.perquizz.perquizz.users.dtos.CreateUserRequestDto
 import com.perquizz.perquizz.users.entities.UserEntity
 import com.perquizz.perquizz.users.repositories.UserRepository
+import com.perquizz.perquizz.withAuthToken
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.Test
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.Instant
 
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -109,6 +112,12 @@ class UserControllerTest : IntegrationTestSummary() {
     }
 
     @Test
+    fun `should not return user information when user is not authenticated`() {
+        mockMvc.perform(get("/api/v1/user/1"))
+            .andExpectAll(status().isUnauthorized)
+    }
+
+    @Test
     fun `should find user by id`() {
         val existingUser =
             UserEntity(
@@ -119,7 +128,12 @@ class UserControllerTest : IntegrationTestSummary() {
 
         repository.save(existingUser)
 
-        mockMvc.perform(get("/api/v1/user/1"))
+        val token = tokenEmitterService.issueToken(TokenRequestDto(1L), Instant.now())
+
+        mockMvc.perform(
+            get("/api/v1/user/1")
+                .withAuthToken(token),
+        )
             .andExpectAll(
                 status().isOk,
                 jsonPath("$.username", equalTo("testuser")),
@@ -132,7 +146,21 @@ class UserControllerTest : IntegrationTestSummary() {
 
     @Test
     fun `should return NOT FOUND when id does not belong to an user in database`() {
-        mockMvc.perform(get("/api/v1/user/1"))
+        val existingUser =
+            UserEntity(
+                "testuser",
+                "test@email.com",
+                "asdlkafaj",
+            )
+
+        repository.save(existingUser)
+
+        val token = tokenEmitterService.issueToken(TokenRequestDto(1L), Instant.now())
+
+        mockMvc.perform(
+            get("/api/v1/user/2")
+                .withAuthToken(token),
+        )
             .andExpectAll(
                 status().isNotFound,
                 jsonPath("$.type", equalTo("Invalid ID")),
