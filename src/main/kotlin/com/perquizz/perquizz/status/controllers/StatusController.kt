@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class StatusController(val service: StatusService) {
+class StatusController(private val service: StatusService) {
     @GetMapping("/api/v1/status")
     fun returnStatus(): ResponseEntity<StatusResponseDto> {
         val response = service.getStatus()

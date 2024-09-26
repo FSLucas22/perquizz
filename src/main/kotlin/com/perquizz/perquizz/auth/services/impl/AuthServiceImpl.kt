@@ -14,9 +14,9 @@ import java.time.Instant
 
 @Service
 class AuthServiceImpl(
-    val userRepository: UserRepository,
-    val passwordEncoder: PasswordEncoder,
-    val tokenEmitterService: TokenEmitterService,
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder,
+    private val tokenEmitterService: TokenEmitterService,
 ) : AuthService {
     override fun authenticateUser(
         request: AuthRequestDto,

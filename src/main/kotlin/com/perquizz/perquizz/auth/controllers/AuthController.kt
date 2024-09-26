@@ -12,7 +12,7 @@ import java.time.Instant
 
 @RestController
 @RequestMapping("/api/v1/auth")
-class AuthController(val authService: AuthService) {
+class AuthController(private val authService: AuthService) {
     @PostMapping
     fun authenticateUser(
         @RequestBody request: AuthRequestDto,

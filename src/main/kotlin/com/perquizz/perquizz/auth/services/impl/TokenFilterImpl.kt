@@ -15,8 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class TokenFilterImpl(
-    val userRepository: UserRepository,
-    val tokenReaderService: TokenReaderService,
+    private val userRepository: UserRepository,
+    private val tokenReaderService: TokenReaderService,
 ) : OncePerRequestFilter() {
     override fun doFilterInternal(
         request: HttpServletRequest,
