@@ -1,0 +1,13 @@
+repos:
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.30.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+  - repo: local
+    hooks:
+      - id: ktLintCheck
+        name: ktLintCheck
+        entry: ./scripts/ktlint-check
+        language: script
+        stages: [pre-commit]
