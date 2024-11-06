@@ -7,15 +7,18 @@ import org.hamcrest.Matchers.stringContainsInOrder
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.annotation.DirtiesContext
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 
 @ActiveProfiles("db-test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Testcontainers
 class MigrationControllerTest : IntegrationTestSummary() {
     @Autowired
     lateinit var flyway: Flyway
@@ -79,5 +82,13 @@ class MigrationControllerTest : IntegrationTestSummary() {
             jsonPath("$.migrations").isArray,
             jsonPath("$.migrations", hasSize<Int>(0)),
         )
+    }
+
+    companion object {
+        @ServiceConnection
+        @Container
+        @JvmStatic
+        val container: PostgreSQLContainer<*> =
+            PostgreSQLContainer("postgres:16.0-alpine3.18")
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class StatusServiceImpl(
-    val entityManager: EntityManager,
-    @Value("\${db.name}") val databaseName: String,
+    private val entityManager: EntityManager,
+    @Value("\${db.name}") private val databaseName: String,
 ) : StatusService {
     override fun getStatus(): StatusResponseDto {
         val databaseDto = DatabaseDto(getVersion(), getMaxConnections(), getActiveConnections())

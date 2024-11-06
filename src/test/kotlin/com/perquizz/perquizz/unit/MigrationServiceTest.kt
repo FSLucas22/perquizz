@@ -17,8 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 class MigrationServiceTest {
-    val repository: MigrationRepository = mockk()
-    val service = MigrationServiceImpl(repository)
+    private val repository: MigrationRepository = mockk()
+    private val service = MigrationServiceImpl(repository)
 
     @Test
     fun `should return pending migrations`() {

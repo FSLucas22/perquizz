@@ -29,6 +29,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -48,25 +51,8 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    dependsOn("serviceUp")
 }
 
 tasks.check {
     dependsOn("detektMain", "detektTest")
-}
-
-tasks.register("serviceUp") {
-    doLast {
-        exec {
-            commandLine("docker", "compose", "up", "-d")
-        }
-    }
-}
-
-tasks.register("serviceDown") {
-    doLast {
-        exec {
-            commandLine("docker", "compose", "down")
-        }
-    }
 }
