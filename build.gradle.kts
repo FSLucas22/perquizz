@@ -51,25 +51,8 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    dependsOn("serviceUp")
 }
 
 tasks.check {
     dependsOn("detektMain", "detektTest")
-}
-
-tasks.register("serviceUp") {
-    doLast {
-        exec {
-            commandLine("docker", "compose", "up", "-d")
-        }
-    }
-}
-
-tasks.register("serviceDown") {
-    doLast {
-        exec {
-            commandLine("docker", "compose", "down")
-        }
-    }
 }
