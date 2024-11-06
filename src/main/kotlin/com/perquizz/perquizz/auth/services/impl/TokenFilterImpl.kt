@@ -33,10 +33,13 @@ class TokenFilterImpl(
 
     private fun getUserFrom(request: HttpServletRequest): UserEntity? =
         getTokenFrom(request)?.let {
-            tokenReaderService.readToken(it).userId
+            try {
+                tokenReaderService.readToken(it).userId
+            } catch (_: InvalidTokenException) {
+                null
+            }
         }?.let {
-            userRepository.findById(it)
-                .orElseThrow { InvalidTokenException("User not found") }
+            userRepository.findById(it).orElse(null)
         }
 
     private fun getTokenFrom(request: HttpServletRequest): Token? =

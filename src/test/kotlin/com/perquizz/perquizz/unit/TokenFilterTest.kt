@@ -4,10 +4,8 @@ import com.perquizz.perquizz.auth.dtos.TokenRequestDto
 import com.perquizz.perquizz.auth.services.impl.TokenEmitterServiceImpl
 import com.perquizz.perquizz.auth.services.impl.TokenFilterImpl
 import com.perquizz.perquizz.auth.services.impl.TokenReaderServiceImpl
-import com.perquizz.perquizz.auth.valueobjects.Token
 import com.perquizz.perquizz.builders.buildUser
 import com.perquizz.perquizz.configuration.JwtConfiguration
-import com.perquizz.perquizz.exceptions.InvalidTokenException
 import com.perquizz.perquizz.users.entities.UserEntity
 import com.perquizz.perquizz.users.repositories.UserRepository
 import io.mockk.every
@@ -19,8 +17,6 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.context.SecurityContextHolder
@@ -72,32 +68,30 @@ class TokenFilterTest {
     }
 
     @Test
-    fun `should throw InvalidTokenException when user is not in the database`() {
+    fun `should not set user authentication when user is not in the database`() {
         requestIsPrepared()
         authorizationIs("Bearer ${token()}")
 
         every { userRepository.findById(1) } returns Optional.empty()
+        every { response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token") } just runs
+        every { filterChain.doFilter(request, response) } just runs
 
-        assertThatThrownBy {
-            tokenFilter.doFilter(request, response, filterChain)
-        }.isInstanceOf(InvalidTokenException::class.java)
-            .hasMessage("User not found")
+        tokenFilter.doFilter(request, response, filterChain)
+
+        assertThat(authenticatedEntity()).isNull()
     }
 
     @Test
-    fun `should throw InvalidTokenException when token is invalid`() {
+    fun `should not set user authentication when token is invalid`() {
         requestIsPrepared()
         authorizationIs("Bearer definitelyNotAToken")
 
-        val exceptionFromTokenReaderService =
-            catchThrowable {
-                tokenReaderService.readToken(Token("definitelyNotAToken"))
-            }
+        every { response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token") } just runs
+        every { filterChain.doFilter(request, response) } just runs
 
-        assertThatThrownBy {
-            tokenFilter.doFilter(request, response, filterChain)
-        }.usingRecursiveComparison()
-            .isEqualTo(exceptionFromTokenReaderService)
+        tokenFilter.doFilter(request, response, filterChain)
+
+        assertThat(authenticatedEntity()).isNull()
     }
 
     @Test

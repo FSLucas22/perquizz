@@ -1,17 +1,18 @@
 package com.perquizz.perquizz.integration
 
 import com.perquizz.perquizz.auth.dtos.TokenRequestDto
+import com.perquizz.perquizz.builders.buildUser
+import com.perquizz.perquizz.randomEmail
+import com.perquizz.perquizz.randomString
 import com.perquizz.perquizz.users.dtos.CreateUserRequestDto
-import com.perquizz.perquizz.users.entities.UserEntity
 import com.perquizz.perquizz.users.repositories.UserRepository
 import com.perquizz.perquizz.withAuthToken
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.notNullValue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
@@ -19,19 +20,29 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.Instant
 
-@ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class UserControllerTest : IntegrationTestSummary() {
+class UserControllerTest : IntegrationTestWithSingletonDb() {
     @Autowired
     private lateinit var repository: UserRepository
 
+    @BeforeEach
+    fun setUp() {
+        repository.deleteAll()
+    }
+
     @Test
     fun `should create new user`() {
+        val prevUser = buildUser()
+        repository.save(prevUser)
+
+        val newId = requireNotNull(prevUser.id) + 1
+
+        val userEntity = buildUser()
+
         val newUser =
             CreateUserRequestDto(
-                "testuser",
-                "testpassword",
-                "test@email.com",
+                userEntity.username,
+                userEntity.password,
+                userEntity.email,
             )
 
         val performResult =
@@ -43,31 +54,28 @@ class UserControllerTest : IntegrationTestSummary() {
 
         performResult.andExpectAll(
             status().isCreated(),
-            header().string("location", "/api/v1/user/1"),
-            jsonPath("$.username", equalTo("testuser")),
-            jsonPath("$.email", equalTo("test@email.com")),
+            header().string("location", "/api/v1/user/$newId"),
+            jsonPath("$.username", equalTo(userEntity.username)),
+            jsonPath("$.email", equalTo(userEntity.email)),
             jsonPath("$.createdAt", notNullValue()),
             jsonPath("$.updatedAt", notNullValue()),
-            jsonPath("$.id", equalTo(1)),
+            jsonPath("$.id", equalTo(newId.toInt())),
         )
     }
 
     @Test
     fun `should not create user with repeated email`() {
-        val existingUser =
-            UserEntity(
-                "testuser",
-                "test@email.com",
-                "asdlkafaj",
-            )
+        val existingEmail = randomEmail()
+
+        val existingUser = buildUser { email = existingEmail }
 
         repository.save(existingUser)
 
         val request =
             CreateUserRequestDto(
-                "newuser",
-                "newpassword",
-                "test@email.com",
+                randomString(),
+                randomString(),
+                existingEmail,
             )
 
         mockMvc.perform(
@@ -83,35 +91,6 @@ class UserControllerTest : IntegrationTestSummary() {
     }
 
     @Test
-    fun `should return correct resource url`() {
-        val existingUser =
-            UserEntity(
-                "testuser",
-                "test@email.com",
-                "asdlkafaj",
-            )
-
-        repository.save(existingUser)
-
-        val request =
-            CreateUserRequestDto(
-                "newuser",
-                "newpassword",
-                "newtest@email.com",
-            )
-
-        mockMvc.perform(
-            post("/api/v1/user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)),
-        ).andExpectAll(
-            status().isCreated(),
-            jsonPath("$.id", equalTo(2)),
-            header().string("location", "/api/v1/user/2"),
-        )
-    }
-
-    @Test
     fun `should not return user information when user is not authenticated`() {
         mockMvc.perform(get("/api/v1/user/1"))
             .andExpectAll(status().isUnauthorized)
@@ -119,46 +98,44 @@ class UserControllerTest : IntegrationTestSummary() {
 
     @Test
     fun `should find user by id`() {
-        val existingUser =
-            UserEntity(
-                "testuser",
-                "test@email.com",
-                "asdlkafaj",
-            )
+        val existingUser = buildUser()
 
         repository.save(existingUser)
 
-        val token = tokenEmitterService.issueToken(TokenRequestDto(1L), Instant.now())
+        val id = requireNotNull(existingUser.id)
+
+        val token =
+            tokenEmitterService.issueToken(
+                TokenRequestDto(id),
+                Instant.now(),
+            )
 
         mockMvc.perform(
-            get("/api/v1/user/1")
+            get("/api/v1/user/$id")
                 .withAuthToken(token),
         )
             .andExpectAll(
                 status().isOk,
-                jsonPath("$.username", equalTo("testuser")),
-                jsonPath("$.email", equalTo("test@email.com")),
+                jsonPath("$.username", equalTo(existingUser.username)),
+                jsonPath("$.email", equalTo(existingUser.email)),
                 jsonPath("$.createdAt", notNullValue()),
                 jsonPath("$.updatedAt", notNullValue()),
-                jsonPath("$.id", equalTo(1)),
+                jsonPath("$.id", equalTo(id.toInt())),
             )
     }
 
     @Test
     fun `should return NOT FOUND when id does not belong to an user in database`() {
-        val existingUser =
-            UserEntity(
-                "testuser",
-                "test@email.com",
-                "asdlkafaj",
-            )
+        val existingUser = buildUser()
 
         repository.save(existingUser)
 
-        val token = tokenEmitterService.issueToken(TokenRequestDto(1L), Instant.now())
+        val id = requireNotNull(existingUser.id)
+
+        val token = tokenEmitterService.issueToken(TokenRequestDto(id), Instant.now())
 
         mockMvc.perform(
-            get("/api/v1/user/2")
+            get("/api/v1/user/${id + 1}")
                 .withAuthToken(token),
         )
             .andExpectAll(

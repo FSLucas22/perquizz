@@ -6,7 +6,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
-class StatusControllerTest : IntegrationTestSummary() {
+class StatusControllerTest : IntegrationTestWithSingletonDb() {
     @Test
     fun `should return status 200`() {
         val result = mockMvc.perform(get("/api/v1/status"))
