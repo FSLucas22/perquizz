@@ -32,3 +32,22 @@ jobs:
 
       - name: Execute quality checks
         run: ./gradlew detektMain detektTest
+  commitizen:
+    name: Commitizen
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install commitizen
+        run: pip install --user -U commitizen
+
+      - name: Check commits from PR
+        run: cz check --rev-range ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }}..${{ github.event.pull_request.head.sha }}
